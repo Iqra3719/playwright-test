@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 test('Signup UX test - new user', async ({ page }) => {
-  const email = test${Date.now()}@gmail.com;
+  const email = `test${Date.now()}@gmail.com `;
 
   await page.goto('https://automationexercise.com');
   await page.getByRole('link', { name: 'Signup / Login' }).click();
