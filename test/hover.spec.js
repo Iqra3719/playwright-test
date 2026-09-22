@@ -9,4 +9,4 @@ test('hover test', async ({ page }) => {
   
   const name = page.locator('.figcaption h5').first();
   await expect(name).toHaveText('name: user1');
-});
+}); 
