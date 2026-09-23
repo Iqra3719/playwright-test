@@ -5,12 +5,20 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    restoreKeys: |
+      npm | "$(Agent.OS)"
+    path: $(Pipeline.Workspace)/.npm
+  displayName: Cache npm
+
 - task: NodeTool@0
   inputs:
-    versionSpec: '18.x'
+    versionSpec: '20.x'
   displayName: 'Install Node.js'
 
-- script: npm ci
+- script: npm ci --cache $(Pipeline.Workspace)/.npm
   displayName: 'Install dependencies'
 
 - script: npx playwright install --with-deps
