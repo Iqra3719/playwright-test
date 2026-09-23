@@ -4,22 +4,21 @@ stages:
 - stage: BuildAndTest
   jobs:
     - job: BuildJob
-    pool:
-      vmImage: ubuntu-latest
-    steps:
+      pool:
+        vmImage: ubuntu-latest
+      steps:
         - script: npm ci
         - script: npx playwright install --with-deps
         - script: npx playwright test
-      continueOnError: true
 - stage: Deploy
   dependsOn: BuildAndTest
   jobs:
     - deployment: DeployJob
-    pool:
-      vmImage: ubuntu-latest
-    environment: production
-    strategy:
-      runOnce:
+      pool:
+        vmImage: ubuntu-latest
+      environment: production
+      strategy:
+       runOnce:
         deploy:
           steps:
                     - script: echo Deployment Successful
