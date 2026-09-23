@@ -1,30 +1,20 @@
 trigger:
 - main
-
 stages:
 - stage: BuildAndTest
-  displayName: Build and Test Stage
   jobs:
     - job: BuildJob
-    displayName: Build Job
     pool:
       vmImage: ubuntu-latest
     steps:
         - script: npm ci
-      displayName: Install dependencies
         - script: npx playwright install --with-deps
-      displayName: Install Playwright
         - script: npx playwright test
-      displayName: Run Playwright tests
       continueOnError: true
-
 - stage: Deploy
-  displayName: Deploy to Production CD
   dependsOn: BuildAndTest
-  condition: succeededOrFailed()
   jobs:
     - deployment: DeployJob
-    displayName: CD Deployment Job
     pool:
       vmImage: ubuntu-latest
     environment: production
@@ -32,5 +22,4 @@ stages:
       runOnce:
         deploy:
           steps:
-                    - script: echo "Starting CD Deployment to Production"
-            displayName: CD Started
+                    - script: echo Deployment Successful
