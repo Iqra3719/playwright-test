@@ -1,20 +1,22 @@
 trigger:
 - main
-
 pool:
-  vmImage: ubuntu-latest
-
+  vmImage: 'ubuntu-latest'
+variables:
+  npm_config_cache: $(Pipeline.Workspace)/.npm
 steps:
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | package-lock.json'
+    path: $(npm_config_cache)
+  displayName: Cache npm
 - task: NodeTool@0
   inputs:
-    versionSpec: '20.x'
+    versionSpec: '18.x'
   displayName: 'Install Node.js'
-
-- script: |
-    npm ci
-    npx playwright install --with-deps
+- script: npm ci --cache $(npm_config_cache)
   displayName: 'Install dependencies'
-
-- script: |
-    npx playwright test
-  displayName: 'Run Playwright Tests'
+- script: npx playwright install --with-deps
+  displayName: 'Install Playwright'
+- script: npx playwright test
+  displayName: 'Run tests'
