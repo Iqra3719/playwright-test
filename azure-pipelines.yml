@@ -25,5 +25,14 @@ steps:
   displayName: 'Install Playwright'
 
 - script: npx playwright test || true
-  displayName: 'Run tests'
+  displayName: 'Run Playwright tests'
   continueOnError: true
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  condition: always()
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'test-results/junit.xml'
+    failTaskOnFailedTests: false
+    testRunTitle: 'Playwright Tests'
