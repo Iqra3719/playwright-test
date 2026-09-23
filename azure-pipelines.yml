@@ -1,38 +1,38 @@
 trigger:
 - main
 
-pool:
-  vmImage: 'ubuntu-latest'
+stages:
+- stage: BuildAndTest
+  displayName: Build and Test Stage CI
+  jobs:
+    - job: BuildJob
+    displayName: Build Job
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+        - script: npm ci
+      displayName: Install dependencies
+        - script: npx playwright install --with-deps
+      displayName: Install Playwright
+        - script: npx playwright test
+      displayName: Run Playwright tests
+      continueOnError: true
 
-steps:
-- task: Cache@2
-  inputs:
-    key: 'npm | "$(Agent.OS)" | package-lock.json'
-    restoreKeys: |
-      npm | "$(Agent.OS)"
-    path: $(Pipeline.Workspace)/.npm
-  displayName: Cache npm
-
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
-
-- script: npm ci --cache $(Pipeline.Workspace)/.npm
-  displayName: 'Install dependencies'
-
-- script: npx playwright install --with-deps
-  displayName: 'Install Playwright'
-
-- script: npx playwright test || true
-  displayName: 'Run Playwright tests'
-  continueOnError: true
-
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  condition: always()
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: 'test-results/junit.xml'
-    failTaskOnFailedTests: false
-    testRunTitle: 'Playwright Tests'
+- stage: Deploy
+  displayName: Deploy to Production CD
+  dependsOn: BuildAndTest
+  condition: succeededOrFailed()
+  jobs:
+    - deployment: DeployJob
+    displayName: CD Deployment Job
+    pool:
+      vmImage: ubuntu-latest
+    environment: production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+                    - script: echo "Starting CD Deployment to Production"
+            displayName: CD Deployment Started
+                    - script: echo "Deploying Application to Production"
+            displayName: Deploying App
