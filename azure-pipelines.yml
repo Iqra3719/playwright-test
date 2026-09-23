@@ -1,8 +1,9 @@
 trigger:
 - main
+
 stages:
 - stage: BuildAndTest
-  displayName: Build and Test Stage CI
+  displayName: Build and Test Stage
   jobs:
     - job: BuildJob
     displayName: Build Job
@@ -16,6 +17,7 @@ stages:
         - script: npx playwright test
       displayName: Run Playwright tests
       continueOnError: true
+
 - stage: Deploy
   displayName: Deploy to Production CD
   dependsOn: BuildAndTest
